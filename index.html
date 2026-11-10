@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uñas de Autor — Reserva tu cita</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="#top" id="brandLink">
+      <img id="brandLogoImg" alt="Logo" style="display:none;">
+      <span id="brandText">Uñas <span class="dot">de</span> Autor</span>
+    </a>
+    <div class="nav-links">
+      <a href="#portafolio">Portafolio</a>
+      <a href="#reservar">Reservar</a>
+      <a href="login.html">Dueña</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Nail atelier · Riviera Maya</p>
+      <h1>El detalle es<br><em>la firma.</em></h1>
+      <span class="gold-rule"></span>
+      <p class="lead">Manicure, pedicure y nail art de autor, hechos a mano y a tu medida. Reserva tu cita en menos de un minuto.</p>
+      <div class="hero-cta">
+        <a href="#reservar" class="btn btn-primary">Reservar cita</a>
+        <a id="linkWhatsapp" href="#" target="_blank" class="btn">Escribir por WhatsApp</a>
+      </div>
+    </div>
+    <div class="hero-frame">
+      <div class="hero-frame-inner">
+        <span class="hero-frame-caption" id="heroCaption">Uñas de Autor</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section on-dark" id="portafolio">
+  <div class="wrap">
+    <p class="eyebrow">Galería</p>
+    <h2 class="section-title">Trabajos recientes</h2>
+    <p class="section-lead">Cada pieza, fotografiada como debe ser.</p>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<section class="section" id="servicios">
+  <div class="wrap">
+    <p class="eyebrow">Catálogo</p>
+    <h2 class="section-title">Elige tu servicio</h2>
+    <p class="section-lead">Selecciona el servicio que buscas y continúa con la fecha y hora.</p>
+    <div class="swatch-grid" id="swatchGrid"></div>
+  </div>
+</section>
+
+<section class="section" id="reservar">
+  <div class="wrap">
+    <p class="eyebrow">Paso a paso</p>
+    <h2 class="section-title">Agenda tu cita</h2>
+    <p class="section-lead">Sin registro, sin apps. Elige fecha, hora y listo.</p>
+
+    <div class="card booking-panel" style="max-width:640px;">
+      <div class="steps-bar">
+        <div class="step-pill active" data-step="1"></div>
+        <div class="step-pill" data-step="2"></div>
+        <div class="step-pill" data-step="3"></div>
+      </div>
+
+      <div class="paso" id="paso1">
+        <h3 style="margin-bottom:14px;">1. Servicio</h3>
+        <div id="servicioSeleccionadoBox" class="empty-state" style="padding:24px;">
+          <p>Elige un servicio arriba en el catálogo para continuar.</p>
+        </div>
+      </div>
+
+      <div class="paso" id="paso2" style="display:none;">
+        <h3 style="margin-bottom:14px;">2. Fecha y hora</h3>
+        <div class="field">
+          <label for="inputFecha">Fecha</label>
+          <input type="date" id="inputFecha">
+        </div>
+        <div id="horasBox">
+          <p style="font-size:13px;">Elige una fecha para ver horarios disponibles.</p>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+          <button class="btn" onclick="irAPaso(1)">← Atrás</button>
+        </div>
+      </div>
+
+      <div class="paso" id="paso3" style="display:none;">
+        <h3 style="margin-bottom:14px;">3. Tus datos</h3>
+        <div class="field">
+          <label for="inputNombre">Nombre</label>
+          <input type="text" id="inputNombre" placeholder="Tu nombre">
+        </div>
+        <div class="field">
+          <label for="inputTelefono">Teléfono / WhatsApp</label>
+          <input type="tel" id="inputTelefono" placeholder="55 1234 5678">
+        </div>
+
+        <div style="padding:18px 20px; background:var(--ivory); border:1px solid var(--line); margin-bottom:20px;">
+          <div class="summary-row"><span class="label">Servicio</span><span class="value" id="resServicio">—</span></div>
+          <div class="summary-row"><span class="label">Fecha</span><span class="value" id="resFecha">—</span></div>
+          <div class="summary-row"><span class="label">Hora</span><span class="value" id="resHora">—</span></div>
+          <div class="summary-row"><span class="label">Precio</span><span class="value" id="resPrecio">—</span></div>
+        </div>
+
+        <div id="confirmMsg" class="error-msg"></div>
+
+        <div style="display:flex; gap:10px;">
+          <button class="btn" onclick="irAPaso(2)">← Atrás</button>
+          <button class="btn btn-primary btn-block" id="btnConfirmar" onclick="confirmarCita()">Confirmar cita</button>
+        </div>
+      </div>
+
+      <div class="paso" id="pasoOk" style="display:none; text-align:center; padding:20px 0;">
+        <h3 style="margin-bottom:8px; font-style:italic;">Tu cita está agendada</h3>
+        <p style="margin-bottom:28px;">Te esperamos. Si necesitas cambiar algo, escríbenos por WhatsApp.</p>
+        <a id="linkWhatsappOk" href="#" target="_blank" class="btn btn-primary">Confirmar por WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap" style="flex-direction:column; align-items:flex-start; gap:18px;">
+    <div class="wrap" style="padding:0; display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:12px;">
+      <span id="footerBusinessName">Uñas de Autor</span>
+      <span>Un proyecto de Nivara Dev</span>
+    </div>
+    <div id="socialLinks" style="display:flex; gap:16px;"></div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/booking.js"></script>
+</body>
+</html>

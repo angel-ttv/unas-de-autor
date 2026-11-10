@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel — Uñas de Autor</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">Cargando…</div>
+
+<div id="contenido" style="display:none;">
+  <nav class="topnav">
+    <div class="wrap">
+      <a class="brand" href="admin.html" id="brandLink">
+        <img id="brandLogoImg" alt="Logo" style="display:none;">
+        <span id="brandText">Uñas <span class="dot">de</span> Autor</span>
+      </a>
+      <div class="nav-links" style="display:flex; align-items:center; gap:20px;">
+        <a href="index.html" target="_blank">Ver sitio</a>
+        <a href="#" id="btnCerrarSesion">Cerrar sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wrap" style="padding-top:32px; padding-bottom:60px;">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="hoy" onclick="cambiarTab('hoy')">Hoy</button>
+      <button class="tab-btn" data-tab="reportes" onclick="cambiarTab('reportes')">Reportes</button>
+      <button class="tab-btn" data-tab="servicios" onclick="cambiarTab('servicios')">Servicios</button>
+      <button class="tab-btn" data-tab="portafolio" onclick="cambiarTab('portafolio')">Portafolio</button>
+      <button class="tab-btn" data-tab="config" onclick="cambiarTab('config')">Configuración</button>
+      <button class="tab-btn" data-tab="equipo" onclick="cambiarTab('equipo')">Equipo</button>
+    </div>
+
+    <!-- TAB HOY -->
+    <div class="tab-panel" id="tab-hoy">
+      <div class="stat-grid" id="statsHoy"></div>
+      <div class="card" style="padding:28px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+          <h3>Agenda</h3>
+          <input type="date" id="inputFechaAgenda" style="border:1px solid var(--line-strong); border-radius:4px; padding:10px 12px;">
+        </div>
+        <div id="agendaBox"></div>
+      </div>
+    </div>
+
+    <!-- TAB REPORTES -->
+    <div class="tab-panel" id="tab-reportes" style="display:none;">
+      <div class="card" style="padding:28px; margin-bottom:24px;">
+        <h3 style="margin-bottom:18px;">Rango de fechas</h3>
+        <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:end;">
+          <div class="field" style="margin:0;"><label>Desde</label><input type="date" id="repDesde"></div>
+          <div class="field" style="margin:0;"><label>Hasta</label><input type="date" id="repHasta"></div>
+          <button class="btn btn-primary" onclick="generarReporte()">Generar</button>
+        </div>
+      </div>
+      <div class="stat-grid" id="statsReporte"></div>
+      <div class="card" style="padding:28px;">
+        <h3 style="margin-bottom:18px;">Detalle</h3>
+        <div id="reporteBox"></div>
+      </div>
+    </div>
+
+    <!-- TAB SERVICIOS -->
+    <div class="tab-panel" id="tab-servicios" style="display:none;">
+      <div class="card" style="padding:28px; margin-bottom:24px;">
+        <h3 style="margin-bottom:18px;">Nuevo servicio</h3>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:14px; align-items:end;">
+          <div class="field" style="margin:0;"><label>Nombre</label><input type="text" id="nsNombre" placeholder="Ej. Manicure rusa"></div>
+          <div class="field" style="margin:0;"><label>Precio (MXN)</label><input type="number" id="nsPrecio" placeholder="250"></div>
+          <div class="field" style="margin:0;"><label>Duración (min)</label><input type="number" id="nsDuracion" placeholder="60"></div>
+          <button class="btn btn-primary" onclick="agregarServicio()">Agregar</button>
+        </div>
+      </div>
+      <div class="card" style="padding:28px;">
+        <h3 style="margin-bottom:18px;">Catálogo</h3>
+        <div id="serviciosBox"></div>
+      </div>
+    </div>
+
+    <!-- TAB PORTAFOLIO -->
+    <div class="tab-panel" id="tab-portafolio" style="display:none;">
+      <div class="card" style="padding:28px; margin-bottom:24px;">
+        <h3 style="margin-bottom:18px;">Subir trabajo</h3>
+        <label class="upload-drop" for="inputFotoTrabajo" id="uploadDropLabel">
+          <p id="uploadDropText">Toca para elegir una foto</p>
+        </label>
+        <input type="file" id="inputFotoTrabajo" accept="image/*" style="display:none;" onchange="onFotoElegida(event)">
+        <div class="field" style="margin-top:18px;">
+          <label>Descripción (opcional)</label>
+          <input type="text" id="nsCaption" placeholder="Ej. Nail art floral, tono nude">
+        </div>
+        <button class="btn btn-primary btn-block" id="btnSubirFoto" onclick="subirFoto()" disabled>Subir al portafolio</button>
+        <p id="uploadMsg" style="font-size:13px; margin-top:10px;"></p>
+      </div>
+      <div class="card" style="padding:28px;">
+        <h3 style="margin-bottom:18px;">Galería publicada</h3>
+        <div class="portfolio-admin-grid" id="portafolioBox"></div>
+      </div>
+    </div>
+
+    <!-- TAB CONFIG -->
+    <div class="tab-panel" id="tab-config" style="display:none;">
+      <div class="card" style="padding:28px; max-width:520px; margin-bottom:24px;">
+        <h3 style="margin-bottom:20px;">Logo</h3>
+        <div id="logoPreviewBox" style="margin-bottom:18px;"></div>
+        <label class="upload-drop" for="inputLogo" id="logoDropLabel">
+          <p id="logoDropText">Toca para elegir tu logo</p>
+        </label>
+        <input type="file" id="inputLogo" accept="image/*" style="display:none;" onchange="onLogoElegido(event)">
+        <button class="btn btn-primary btn-block" id="btnSubirLogo" onclick="subirLogo()" disabled style="margin-top:14px;">Subir logo</button>
+        <button class="btn btn-danger btn-block" id="btnQuitarLogo" onclick="quitarLogo()" style="margin-top:8px; display:none;">Quitar logo</button>
+        <p id="logoMsg" style="font-size:13px; margin-top:10px;"></p>
+      </div>
+      <div class="card" style="padding:28px; max-width:520px; margin-bottom:24px;">
+        <h3 style="margin-bottom:20px;">Redes sociales</h3>
+        <p style="font-size:13px; margin-bottom:18px;">Pega el link completo de tu perfil. Si dejas uno vacío, ese ícono no se muestra en el sitio.</p>
+        <div class="field"><label>Instagram</label><input type="url" id="cfgInstagram" placeholder="https://instagram.com/tu_negocio"></div>
+        <div class="field"><label>Facebook</label><input type="url" id="cfgFacebook" placeholder="https://facebook.com/tu_negocio"></div>
+        <div class="field" style="margin-bottom:0;"><label>TikTok</label><input type="url" id="cfgTiktok" placeholder="https://tiktok.com/@tu_negocio"></div>
+      </div>
+      <div class="card" style="padding:28px; max-width:520px;">
+        <h3 style="margin-bottom:20px;">Datos del negocio</h3>
+        <div class="field"><label>Nombre del negocio</label><input type="text" id="cfgNombre"></div>
+        <div class="field"><label>WhatsApp (con código de país, sin +)</label><input type="text" id="cfgWhatsapp" placeholder="529841234567"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="field"><label>Hora de apertura</label><input type="time" id="cfgApertura"></div>
+          <div class="field"><label>Hora de cierre</label><input type="time" id="cfgCierre"></div>
+        </div>
+        <div class="field"><label>Duración de cada bloque de horario (min)</label><input type="number" id="cfgIntervalo"></div>
+        <div class="field">
+          <label>Días laborables</label>
+          <div id="diasBox" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="guardarConfig()">Guardar cambios</button>
+        <p id="cfgMsg" style="font-size:13px; color:var(--ok); margin-top:10px; display:none;">Guardado ✓</p>
+      </div>
+    </div>
+
+    <!-- TAB EQUIPO -->
+    <div class="tab-panel" id="tab-equipo" style="display:none;">
+      <div class="card" style="padding:28px; max-width:520px; margin-bottom:24px;">
+        <h3 style="margin-bottom:10px;">Dar acceso a alguien más</h3>
+        <p style="font-size:13px; margin-bottom:18px;">Crea un correo y contraseña para que otra persona (por ejemplo una ayudante) pueda entrar al panel. Va a tener el mismo acceso que tú: agenda, servicios, portafolio y configuración.</p>
+        <div class="field"><label>Nombre</label><input type="text" id="eqNombre" placeholder="Nombre de la persona"></div>
+        <div class="field"><label>Correo</label><input type="email" id="eqEmail" placeholder="correo@ejemplo.com"></div>
+        <div class="field" style="margin-bottom:0;"><label>Contraseña temporal (mínimo 6 caracteres)</label><input type="text" id="eqPassword" placeholder="Ella la puede cambiar después"></div>
+        <button class="btn btn-primary btn-block" onclick="crearAccesoEquipo()" style="margin-top:18px;">Crear acceso</button>
+        <p id="eqMsg" style="font-size:13px; margin-top:10px;"></p>
+      </div>
+      <div class="card" style="padding:28px; max-width:520px;">
+        <h3 style="margin-bottom:14px;">Accesos creados</h3>
+        <div id="equipoBox"></div>
+        <p style="font-size:12px; margin-top:16px;">Para quitarle el acceso a alguien, ve a Firebase Console → Authentication, busca su correo y elimina su usuario ahí. Esta lista es solo de referencia.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

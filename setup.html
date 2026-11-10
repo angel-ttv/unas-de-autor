@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurar negocio — Uñas de Autor</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="card auth-card" id="setupCard">
+    <p class="eyebrow">Primer arranque</p>
+    <h1>Crea tu cuenta</h1>
+    <p class="sub">Esto solo se hace una vez. Después entra desde la página de login.</p>
+
+    <div id="errorMsg" class="error-msg"></div>
+
+    <div class="field">
+      <label for="inputNombreNegocio">Nombre del negocio</label>
+      <input type="text" id="inputNombreNegocio" value="Uñas de Autor">
+    </div>
+    <div class="field">
+      <label for="inputWhatsapp">WhatsApp (con código de país, sin +)</label>
+      <input type="text" id="inputWhatsapp" placeholder="529841234567">
+    </div>
+    <div class="field">
+      <label for="inputEmail">Tu correo</label>
+      <input type="email" id="inputEmail" placeholder="tucorreo@ejemplo.com">
+    </div>
+    <div class="field">
+      <label for="inputPassword">Contraseña (mínimo 6 caracteres)</label>
+      <input type="password" id="inputPassword" placeholder="••••••••">
+    </div>
+
+    <button class="btn btn-primary btn-block" id="btnCrear" onclick="crearCuenta()">Crear cuenta y entrar</button>
+  </div>
+
+  <div class="card auth-card" id="lockedCard" style="display:none; text-align:center;">
+    <h1 style="font-size:22px;">Ya existe una cuenta</h1>
+    <p class="sub">Este negocio ya fue configurado. Ve a la página de login.</p>
+    <a href="login.html" class="btn btn-primary btn-block">Ir a login</a>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/data.js"></script>
+<script>
+const SERVICIOS_DEFAULT = [
+  { nombre: 'Manicure clásica', precio: 150, duracionMin: 40, color: '#AD8A4E' },
+  { nombre: 'Manicure en gel', precio: 250, duracionMin: 60, color: '#6B1F35' },
+  { nombre: 'Pedicure spa', precio: 220, duracionMin: 50, color: '#8C7768' },
+  { nombre: 'Uñas acrílicas', precio: 380, duracionMin: 90, color: '#1C1410' },
+  { nombre: 'Nail art / decorado', precio: 80, duracionMin: 20, color: '#B9A281' },
+  { nombre: 'Retiro de gel/acrílico', precio: 100, duracionMin: 30, color: '#7A2B44' }
+];
+
+async function checkLock() {
+  const snap = await db.collection('config').doc('setup').get();
+  if (snap.exists && snap.data().completado) {
+    document.getElementById('setupCard').style.display = 'none';
+    document.getElementById('lockedCard').style.display = 'block';
+  }
+}
+checkLock();
+
+async function crearCuenta() {
+  const nombreNegocio = document.getElementById('inputNombreNegocio').value.trim();
+  const whatsapp = document.getElementById('inputWhatsapp').value.trim();
+  const email = document.getElementById('inputEmail').value.trim();
+  const pass = document.getElementById('inputPassword').value;
+  const errBox = document.getElementById('errorMsg');
+  const btn = document.getElementById('btnCrear');
+  errBox.classList.remove('show');
+
+  if (!nombreNegocio || !email || !pass) {
+    errBox.textContent = 'Completa nombre, correo y contraseña.';
+    errBox.classList.add('show');
+    return;
+  }
+  if (pass.length < 6) {
+    errBox.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+    errBox.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creando…';
+
+  try {
+    const lockSnap = await db.collection('config').doc('setup').get();
+    if (lockSnap.exists && lockSnap.data().completado) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    await auth.createUserWithEmailAndPassword(email, pass);
+
+    await saveConfig({
+      nombre: nombreNegocio,
+      whatsapp: whatsapp,
+      horaApertura: '10:00',
+      horaCierre: '19:00',
+      diasLaborables: [1, 2, 3, 4, 5, 6],
+      intervaloMin: 30
+    });
+
+    const existentes = await getServicios();
+    if (!existentes.length) {
+      for (const s of SERVICIOS_DEFAULT) {
+        await crearServicio(s);
+      }
+    }
+
+    await db.collection('config').doc('setup').set({ completado: true, creadoEn: Date.now() });
+
+    window.location.href = 'admin.html';
+  } catch (err) {
+    console.error(err);
+    errBox.textContent = err.code === 'auth/email-already-in-use'
+      ? 'Ese correo ya tiene cuenta. Ve a login.'
+      : 'No se pudo crear la cuenta. Intenta de nuevo.';
+    errBox.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Crear cuenta y entrar';
+  }
+}
+</script>
+</body>
+</html>
